@@ -85,3 +85,6 @@ obj-$(CONFIG_CHARGER_TPS65217)	+= tps65217_charger.o
 obj-$(CONFIG_AXP288_FUEL_GAUGE) += axp288_fuel_gauge.o
 obj-$(CONFIG_AXP288_CHARGER)	+= axp288_charger.o
 obj-$(CONFIG_CHARGER_CROS_USBPD)	+= cros_usbpd-charger.o
+obj-$(CONFIG_ARCH_QCOM)		+= qcom/
+#/* Bug594012,gudi.wt,20201023,Bringup:Add for AFC */
+obj-$(CONFIG_AFC)		+= afc/

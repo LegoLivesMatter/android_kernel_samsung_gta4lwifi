@@ -28,10 +28,22 @@ static inline uint64_t bcache_dev_sectors_dirty(struct bcache_device *d)
 	return ret;
 }
 
-static inline unsigned int offset_to_stripe(struct bcache_device *d,
+static inline int offset_to_stripe(struct bcache_device *d,
 					uint64_t offset)
 {
 	do_div(offset, d->stripe_size);
+
+	/* d->nr_stripes is in range [1, INT_MAX] */
+	if (unlikely(offset >= d->nr_stripes)) {
+		pr_err("Invalid stripe %llu (>= nr_stripes %d).\n",
+			offset, d->nr_stripes);
+		return -EINVAL;
+	}
+
+	/*
+	 * Here offset is definitly smaller than INT_MAX,
+	 * return it as int will never overflow.
+	 */
 	return offset;
 }
 
@@ -39,7 +51,10 @@ static inline bool bcache_dev_stripe_dirty(struct cached_dev *dc,
 					   uint64_t offset,
 					   unsigned int nr_sectors)
 {
-	unsigned int stripe = offset_to_stripe(&dc->disk, offset);
+	int stripe = offset_to_stripe(&dc->disk, offset);
+
+	if (stripe < 0)
+		return false;
 
 	while (1) {
 		if (atomic_read(dc->disk.stripe_sectors_dirty + stripe))
@@ -61,6 +76,9 @@ static inline bool should_writeback(struct cached_dev *dc, struct bio *bio,
 	if (cache_mode != CACHE_MODE_WRITEBACK ||
 	    test_bit(BCACHE_DEV_DETACHING, &dc->disk.flags) ||
 	    in_use > CUTOFF_WRITEBACK_SYNC)
+		return false;
+
+	if (bio_op(bio) == REQ_OP_DISCARD)
 		return false;
 
 	if (dc->partial_stripes_expensive &&

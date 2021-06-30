@@ -1,10 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- */
+// SPDX-License-Identifier: GPL-2.0+
 
 #include <linux/shmem_fs.h>
 
@@ -99,10 +93,10 @@ int vkms_gem_fault(struct vm_fault *vmf)
 	return ret;
 }
 
-struct drm_gem_object *vkms_gem_create(struct drm_device *dev,
-				       struct drm_file *file,
-				       u32 *handle,
-				       u64 size)
+static struct drm_gem_object *vkms_gem_create(struct drm_device *dev,
+					      struct drm_file *file,
+					      u32 *handle,
+					      u64 size)
 {
 	struct vkms_gem_object *obj;
 	int ret;
@@ -115,12 +109,8 @@ struct drm_gem_object *vkms_gem_create(struct drm_device *dev,
 		return ERR_CAST(obj);
 
 	ret = drm_gem_handle_create(file, &obj->gem, handle);
-	drm_gem_object_put_unlocked(&obj->gem);
-	if (ret) {
-		drm_gem_object_release(&obj->gem);
-		kfree(obj);
+	if (ret)
 		return ERR_PTR(ret);
-	}
 
 	return &obj->gem;
 }
@@ -146,6 +136,8 @@ int vkms_dumb_create(struct drm_file *file, struct drm_device *dev,
 
 	args->size = gem_obj->size;
 	args->pitch = pitch;
+
+	drm_gem_object_put_unlocked(gem_obj);
 
 	DRM_DEBUG_DRIVER("Created object of size %lld\n", size);
 

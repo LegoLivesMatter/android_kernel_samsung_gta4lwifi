@@ -1,4 +1,4 @@
-ccflags-y += -Werror
+ccflags-y += 
 
 obj-$(CONFIG_VSERVICES_PROTOCOL_SERIAL_CLIENT) += vservices_protocol_serial_client.o
 vservices_protocol_serial_client-objs = client.o

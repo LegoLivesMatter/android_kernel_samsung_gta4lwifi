@@ -623,7 +623,8 @@ struct __upload_cause upload_cause_st[] = {
 	{ "qdaf_fail", UPLOAD_CAUSE_QUEST_QDAF_FAIL, SEC_STRNCMP },
 	{ "zip_unzip_test", UPLOAD_CAUSE_QUEST_ZIP_UNZIP, SEC_STRNCMP },
 	{ "quest_fail", UPLOAD_CAUSE_QUEST_FAIL, SEC_STRNCMP },
-	{ "aoss_thermal_diff", UPLOAD_CAUSE_QUEST_AOSSTHERMALDIFF, SEC_STRNCMP },		
+	{ "aoss_thermal_diff", UPLOAD_CAUSE_QUEST_AOSSTHERMALDIFF, SEC_STRNCMP },
+	{ "stressapptest_test", UPLOAD_CAUSE_QUEST_STRESSAPPTEST, SEC_STRNCMP },	
 #endif
 };
 
@@ -788,15 +789,17 @@ static int __init __sec_debug_dt_addr_init(void)
 		return -ENODEV;
 	}
 
-	watchdog_base = of_iomap(np, 0);
-	if (unlikely(!watchdog_base)) {
-		pr_err("unable to map watchdog_base offset\n");
-		return -ENODEV;
-	}
+	if (of_device_is_available(np)) {
+		watchdog_base = of_iomap(np, 0);
+		if (unlikely(!watchdog_base)) {
+			pr_err("unable to map watchdog_base offset\n");
+			return -ENODEV;
+		}
 
-	/* check upload_cause here */
-	pr_emerg("watchdog_base addr : 0x%p(0x%llx)\n", watchdog_base,
-			(unsigned long long)virt_to_phys(watchdog_base));
+		/* check upload_cause here */
+		pr_emerg("watchdog_base addr : 0x%p(0x%llx)\n", watchdog_base,
+				(unsigned long long)virt_to_phys(watchdog_base));
+	}
 #endif
 
 	return 0;

@@ -1,5 +1,5 @@
 TEST_GEN_PROGS := owner pidns
 
-CFLAGS := -Wall 
+CFLAGS := -Wall -Werror
 
 include ../lib.mk

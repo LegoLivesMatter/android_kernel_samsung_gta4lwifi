@@ -3,7 +3,7 @@
 # Linux.
 #
 asflags := -ansi
-ccflags := 
+ccflags := -Werror
 
 lib-y                 := bootstr_$(BITS).o
 lib-y                 += init_$(BITS).o

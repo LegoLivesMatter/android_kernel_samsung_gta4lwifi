@@ -407,7 +407,9 @@ PYTHON2		= python2
 PYTHON3		= python3
 CHECK		= sparse
 
-CC		= $(REAL_CC)
+# Use the wrapper for the compiler.  This wrapper scans for new
+# warnings and causes the build to stop upon encountering them
+CC		= $(PYTHON) $(srctree)/scripts/gcc-wrapper.py $(REAL_CC)
 
 CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
 		  -Wbitwise -Wno-return-void -Wno-unknown-attribute $(CF)
@@ -439,7 +441,7 @@ LINUXINCLUDE    := \
 KBUILD_AFLAGS   := -D__ASSEMBLY__
 KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fno-strict-aliasing -fno-common -fshort-wchar \
-		   -Wimplicit-function-declaration \
+		   -Werror-implicit-function-declaration \
 		   -Wno-format-security \
 		   -std=gnu89
 KBUILD_CPPFLAGS := -D__KERNEL__
@@ -520,7 +522,7 @@ CLANG_FLAGS	+= -no-integrated-as
 endif
 CLANG_FLAGS	+= $(call cc-option, -Wno-misleading-indentation)
 CLANG_FLAGS	+= $(call cc-option, -Wno-bool-operation)
-CLANG_FLAGS	+= -Wunknown-warning-option
+CLANG_FLAGS	+= -Werror=unknown-warning-option
 CLANG_FLAGS	+= $(call cc-option, -Wno-unsequenced)
 KBUILD_CFLAGS	+= $(CLANG_FLAGS)
 KBUILD_AFLAGS	+= $(CLANG_FLAGS)
@@ -970,19 +972,19 @@ KBUILD_CFLAGS  += $(call cc-option,-fno-stack-check,)
 KBUILD_CFLAGS   += $(call cc-option,-fconserve-stack)
 
 # disallow errors like 'EXPORT_GPL(foo);' with missing header
-KBUILD_CFLAGS   += $(call cc-option,-Wimplicit-int)
+KBUILD_CFLAGS   += $(call cc-option,-Werror=implicit-int)
 
 # require functions to have arguments in prototypes, not empty 'int foo()'
-KBUILD_CFLAGS   += $(call cc-option,-Wstrict-prototypes)
+KBUILD_CFLAGS   += $(call cc-option,-Werror=strict-prototypes)
 
 # Prohibit date/time macros, which would make the build non-deterministic
-KBUILD_CFLAGS   += $(call cc-option,-Wdate-time)
+KBUILD_CFLAGS   += $(call cc-option,-Werror=date-time)
 
 # enforce correct pointer usage
-KBUILD_CFLAGS   += $(call cc-option,-Wincompatible-pointer-types)
+KBUILD_CFLAGS   += $(call cc-option,-Werror=incompatible-pointer-types)
 
 # Require designated initializers for all marked structures
-KBUILD_CFLAGS   += $(call cc-option,-Wdesignated-init)
+KBUILD_CFLAGS   += $(call cc-option,-Werror=designated-init)
 
 # change __FILE__ to the relative path from the srctree
 KBUILD_CFLAGS	+= $(call cc-option,-fmacro-prefix-map=$(srctree)/=)

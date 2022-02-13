@@ -5,7 +5,7 @@
 #
 
 asflags-y := -ansi
-ccflags-y := 
+ccflags-y := -Werror
 
 extra-y     := head_$(BITS).o
 

@@ -1,8 +1,8 @@
 # Fail on warnings - also for files referenced in subdirs
-#  can be disabled for specific files using:
+# -Werror can be disabled for specific files using:
 # CFLAGS_<file.o> := -Wno-error
 ifeq ($(W),)
-subdir-ccflags-y := 
+subdir-ccflags-y := -Werror
 endif
 
 # platform specific definitions

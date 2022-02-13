@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0
 # Makefile for xmon
 
-subdir-ccflags-$(CONFIG_PPC_WERROR) += 
+subdir-ccflags-$(CONFIG_PPC_WERROR) += -Werror
 
 GCOV_PROFILE := n
 UBSAN_SANITIZE := n
